@@ -1,1 +1,90 @@
-https://fun.autoblow.com/connect-partner/2wj2d31r1cj6
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Autoblow Control</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@xsense/autoblow-sdk"></script>
+</head>
+<body>
+    <nav class="container-fluid">
+        <ul><li><strong>Autoblow Control Panel</strong></li></ul>
+        <ul>
+            <li><a href="#init">Initialize</a></li>
+            <li><a href="#control">Control</a></li>
+            <li><a href="#" role="button">Help</a></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <div class="grid">
+            <section id="init">
+                <hgroup>
+                    <h2>Initialize Device</h2>
+                    <h3>Connect to your Autoblow device</h3>
+                </hgroup>
+                <form id="initForm">
+                    <input type="text" id="deviceToken" placeholder="Enter Device Token" required>
+                    <button type="submit">Connect</button>
+                </form>
+                <p id="initStatus"></p>
+            </section>
+            <section id="control" style="display:none;">
+                <hgroup>
+                    <h2>Control Panel</h2>
+                    <h3>Manage device settings</h3>
+                </hgroup>
+                <button id="startScript">Start Script</button>
+                <button id="stopScript">Stop Script</button>
+                <button id="getInfo">Get Device Info</button>
+                <p id="deviceInfo"></p>
+            </section>
+        </div>
+    </main>
+    <footer class="container">
+        <small><a href="#init">Initialize</a> • <a href="#control">Control</a></small>
+    </footer>
+    <script>
+        const autoblow = new Autoblow();
+
+        document.getElementById('initForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const token = document.getElementById('deviceToken').value;
+            try {
+                await autoblow.init(token);
+                document.getElementById('initStatus').textContent = 'Device connected successfully';
+                document.getElementById('control').style.display = 'block';
+            } catch (error) {
+                document.getElementById('initStatus').textContent = 'Failed to connect to device';
+            }
+        });
+
+        document.getElementById('startScript').addEventListener('click', async function() {
+            try {
+                await autoblow.localScriptStart();
+                alert('Script started');
+            } catch (error) {
+                alert('Failed to start script');
+            }
+        });
+
+        document.getElementById('stopScript').addEventListener('click', async function() {
+            try {
+                await autoblow.localScriptStop();
+                alert('Script stopped');
+            } catch (error) {
+                alert('Failed to stop script');
+            }
+        });
+
+        document.getElementById('getInfo').addEventListener('click', async function() {
+            try {
+                const info = await autoblow.getInfo();
+                document.getElementById('deviceInfo').textContent = JSON.stringify(info);
+            } catch (error) {
+                alert('Failed to get device info');
+            }
+        });
+    </script>
+</body>
+</html>
